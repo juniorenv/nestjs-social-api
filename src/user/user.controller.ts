@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { CreateUserDto } from "./dto/create-user.dto";
@@ -15,7 +16,8 @@ import { UserResponseDto } from "./dto/user-response.dto";
 import { ProfileEntity } from "./dto/user.types";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UpdateProfileDto } from "./dto/update-profile.dto";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { AuthGuard } from "src/auth/auth.guard";
 
 @Controller("users")
 @ApiTags("users")
@@ -33,6 +35,8 @@ export class UserController {
   }
 
   @Delete(":userId")
+  @ApiBearerAuth("JWT-auth")
+  @UseGuards(AuthGuard)
   public async delete(
     @Param("userId", ParseUUIDPipe) userId: string,
   ): Promise<UserResponseDto> {
@@ -40,6 +44,8 @@ export class UserController {
   }
 
   @Patch(":userId")
+  @ApiBearerAuth("JWT-auth")
+  @UseGuards(AuthGuard)
   public async update(
     @Param("userId", ParseUUIDPipe) userId: string,
     @Body() updateUserDto: UpdateUserDto,
@@ -48,6 +54,8 @@ export class UserController {
   }
 
   @Post(":userId/profile")
+  @ApiBearerAuth("JWT-auth")
+  @UseGuards(AuthGuard)
   public async createProfileInfo(
     @Param("userId", ParseUUIDPipe) userId: string,
     @Body() profileInfo: CreateProfileDto,
@@ -56,6 +64,8 @@ export class UserController {
   }
 
   @Patch(":userId/profile")
+  @ApiBearerAuth("JWT-auth")
+  @UseGuards(AuthGuard)
   public async updateProfileInfo(
     @Param("userId", ParseUUIDPipe) userId: string,
     @Body() updateProfileDto: UpdateProfileDto,
