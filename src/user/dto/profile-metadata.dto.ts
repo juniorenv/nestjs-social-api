@@ -1,3 +1,4 @@
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import {
   IsArray,
@@ -27,33 +28,67 @@ export enum Language {
 }
 
 export class SocialLinksDto {
+  @ApiPropertyOptional({
+    description: "Twitter profile URL",
+    example: "https://twitter.com/johndoe",
+  })
   @IsOptional()
-  @IsUrl({}, { message: "Twitter must be a valid URL" })
+  @IsUrl({}, { message: "twitter must be a valid URL" })
   twitter?: string;
 
+  @ApiPropertyOptional({
+    description: "LinkedIn profile URL",
+    example: "https://linkedin.com/in/johndoe",
+  })
   @IsOptional()
-  @IsUrl({}, { message: "Linkedin must be a valid URL" })
+  @IsUrl({}, { message: "linkedin must be a valid URL" })
   linkedin?: string;
 
+  @ApiPropertyOptional({
+    description: "GitHub profile URL",
+    example: "https://github.com/johndoe",
+  })
   @IsOptional()
-  @IsUrl({}, { message: "Github must be a valid URL" })
+  @IsUrl({}, { message: "github must be a valid URL" })
   github?: string;
 }
 
 export class PreferencesDto {
-  @IsEnum(Theme, { message: "Theme must be light, dark or system" })
+  @ApiProperty({
+    description: "User interface theme preference",
+    enum: Theme,
+    example: "dark",
+  })
+  @IsEnum(Theme, { message: "theme must be light, dark or system" })
   theme: Theme;
 
+  @ApiProperty({
+    description: "Enable/disable notifications",
+    example: true,
+  })
   @IsBoolean()
   notifications: boolean;
 
-  @IsEnum(Language, { message: "Language must be en, fr, es, or pt" })
+  @ApiProperty({
+    description: "Preferred language",
+    enum: Language,
+    example: "en",
+  })
+  @IsEnum(Language, { message: "language must be en, fr, es, or pt" })
   language: Language;
 
+  @ApiPropertyOptional({
+    description: "Enable/disable email notifications",
+    example: true,
+  })
   @IsOptional()
   @IsBoolean()
   emailNotifications?: boolean;
 
+  @ApiPropertyOptional({
+    description: "User timezone",
+    example: "America/New_York",
+  })
   @IsOptional()
   @IsString()
   @MinLength(1)
@@ -61,48 +96,91 @@ export class PreferencesDto {
 }
 
 export class ProfileMetadata {
+  @ApiProperty({
+    description: "User biography",
+    minLength: 1,
+    maxLength: 160,
+    example: "Full-stack developer passionate about TypeScript",
+  })
   @IsString()
   @Length(1, 160)
   bio: string;
 
-  @IsUrl({}, { message: "Avatar must be a valid URL" })
+  @ApiProperty({
+    description: "Avatar image URL",
+    example: "https://i.pravatar.cc/300",
+  })
+  @IsUrl({}, { message: "avatar must be a valid URL" })
   avatar: string;
 
+  @ApiProperty({
+    description: "Phone number in international format",
+    example: "+5577996483728",
+  })
   @IsString()
   @Matches(/^\+[1-9]\d{6,14}$/, {
     message:
-      "Phone number must be in international format with 7-15 digits (e.g +5577996483728)",
+      "phone number must be in international format with 7-15 digits (e.g +5577996483728)",
   })
   phone: string;
 
+  @ApiProperty({
+    description: "User location/country",
+    example: "Brazil",
+  })
   @IsString()
   @MinLength(1)
   location: string;
 
-  @IsUrl({}, { message: "Website must be a valid URL" })
+  @ApiProperty({
+    description: "Personal website URL",
+    example: "https://johndoe.dev",
+  })
+  @IsUrl({}, { message: "website must be a valid URL" })
   website: string;
 
+  @ApiPropertyOptional({
+    description: "Social media profile links",
+    type: () => SocialLinksDto,
+  })
   @IsOptional()
   @ValidateNested()
   @Type(() => SocialLinksDto)
   @IsObject()
   socialLinks?: SocialLinksDto;
 
+  @ApiProperty({
+    description: "User preferences and settings",
+    type: () => PreferencesDto,
+  })
   @ValidateNested()
   @Type(() => PreferencesDto)
   @IsObject()
   preferences: PreferencesDto;
 
+  @ApiPropertyOptional({
+    description: "Job title or occupation",
+    example: "Software Engineer",
+  })
   @IsOptional()
   @IsString()
   @MinLength(1)
   occupation?: string;
 
+  @ApiPropertyOptional({
+    description: "Company name",
+    example: "Nvidia",
+  })
   @IsOptional()
   @IsString()
   @MinLength(1)
   company?: string;
 
+  @ApiPropertyOptional({
+    description: "List of technical skills",
+    type: [String],
+    example: ["TypeScript", "React", "Node.js"],
+  })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
