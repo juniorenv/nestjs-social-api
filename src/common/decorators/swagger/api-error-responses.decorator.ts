@@ -1,6 +1,8 @@
 import { ApiResponse } from "@nestjs/swagger";
 
-export function ApiNotFoundResponse(resource: string) {
+export function ApiNotFoundResponse(resource: string, customPath?: string) {
+  const path = customPath || "/users/123e4567-e89b-12d3-a456-426614174000";
+
   return ApiResponse({
     status: 404,
     description: `${resource} not found`,
@@ -8,7 +10,7 @@ export function ApiNotFoundResponse(resource: string) {
       example: {
         statusCode: 404,
         timestamp: "2025-12-14T10:30:00.000Z",
-        path: "/users/123e4567-e89b-12d3-a456-426614174000",
+        path,
         message: {
           message: `${resource} with ID 123e4567-e89b-12d3-a456-426614174000 not found`,
           error: "Not Found",
@@ -18,7 +20,9 @@ export function ApiNotFoundResponse(resource: string) {
   });
 }
 
-export function ApiInvalidUUIDResponse() {
+export function ApiInvalidUUIDResponse(customPath?: string) {
+  const path = customPath || "/users/invalid-uuid";
+
   return ApiResponse({
     status: 400,
     description: "Invalid UUID format",
@@ -26,7 +30,7 @@ export function ApiInvalidUUIDResponse() {
       example: {
         statusCode: 400,
         timestamp: "2025-12-14T10:30:00.000Z",
-        path: "/users/invalid-uuid",
+        path,
         message: {
           message: "Validation failed (uuid is expected)",
           error: "Bad Request",
@@ -36,7 +40,9 @@ export function ApiInvalidUUIDResponse() {
   });
 }
 
-export function ApiConflictResponse(message: string) {
+export function ApiConflictResponse(message: string, customPath?: string) {
+  const path = customPath || "/users";
+
   return ApiResponse({
     status: 409,
     description: "Conflict - Resource already exists",
@@ -44,7 +50,7 @@ export function ApiConflictResponse(message: string) {
       example: {
         statusCode: 409,
         timestamp: "2025-12-14T10:30:00.000Z",
-        path: "/users",
+        path,
         message: {
           message,
           error: "Conflict",
@@ -54,7 +60,9 @@ export function ApiConflictResponse(message: string) {
   });
 }
 
-export function ApiUnauthorizedResponse() {
+export function ApiUnauthorizedResponse(customPath?: string) {
+  const path = customPath || "/users/123e4567-e89b-12d3-a456-426614174000";
+
   return ApiResponse({
     status: 401,
     description: "Unauthorized - Authentication failed",
@@ -67,7 +75,7 @@ export function ApiUnauthorizedResponse() {
             timestamp: { type: "string", example: "2025-12-14T20:00:02.260Z" },
             path: {
               type: "string",
-              example: "/users/123e4567-e89b-12d3-a456-426614174000",
+              example: path,
             },
             message: {
               type: "object",
@@ -85,7 +93,7 @@ export function ApiUnauthorizedResponse() {
             value: {
               statusCode: 401,
               timestamp: "2025-12-14T20:00:02.260Z",
-              path: "/users/123e4567-e89b-12d3-a456-426614174000",
+              path,
               message: {
                 message: "Access token is required",
                 error: "Unauthorized",
@@ -98,7 +106,7 @@ export function ApiUnauthorizedResponse() {
             value: {
               statusCode: 401,
               timestamp: "2025-12-14T20:00:02.260Z",
-              path: "/users/123e4567-e89b-12d3-a456-426614174000",
+              path,
               message: {
                 message: "Token has expired",
                 error: "Unauthorized",
@@ -111,7 +119,7 @@ export function ApiUnauthorizedResponse() {
             value: {
               statusCode: 401,
               timestamp: "2025-12-14T20:00:02.260Z",
-              path: "/users/123e4567-e89b-12d3-a456-426614174000",
+              path,
               message: {
                 message: "Invalid access token",
                 error: "Unauthorized",
@@ -124,7 +132,7 @@ export function ApiUnauthorizedResponse() {
             value: {
               statusCode: 401,
               timestamp: "2025-12-14T20:00:02.260Z",
-              path: "/users/123e4567-e89b-12d3-a456-426614174000",
+              path,
               message: {
                 message: "Authorization failed",
                 error: "Unauthorized",
