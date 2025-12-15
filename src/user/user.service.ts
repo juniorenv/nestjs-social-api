@@ -170,6 +170,9 @@ export class UserService {
     }
 
     const customMerger = (objValue: unknown, srcValue: unknown): unknown => {
+      if (Array.isArray(srcValue)) {
+        return srcValue;
+      }
       if (isObject(objValue) && isObject(srcValue)) {
         return mergeWith({}, objValue, srcValue, customMerger);
       }

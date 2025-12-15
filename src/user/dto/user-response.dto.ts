@@ -11,13 +11,13 @@ export class UserResponseDto {
 
   @ApiProperty({
     description: "User's full name",
-    example: "John Doe",
+    example: "Jane Doe",
   })
   name: string;
 
   @ApiProperty({
     description: "User's email address",
-    example: "john.doe@example.com",
+    example: "Jane.doe@example.com",
     format: "email",
   })
   email: string;
