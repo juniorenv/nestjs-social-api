@@ -120,7 +120,7 @@ export class ProfileMetadata {
   @IsString()
   @Matches(/^\+[1-9]\d{6,14}$/, {
     message:
-      "phone number must be in international format with 7-15 digits (e.g +5577996483728)",
+      "phone number must be in international format starting with + followed by 7-15 digits (e.g., +5577996483728)",
   })
   phone: string;
 

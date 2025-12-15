@@ -16,8 +16,23 @@ import { UserResponseDto } from "./dto/user-response.dto";
 import { ProfileEntity } from "./dto/user.types";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UpdateProfileDto } from "./dto/update-profile.dto";
-import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 import { AuthGuard } from "src/auth/auth.guard";
+import { UserDetailResponseDto } from "./dto/user-detail-response.dto";
+import {
+  ApiConflictResponse,
+  ApiDatabaseExceptionResponses,
+  ApiInvalidUUIDResponse,
+  ApiNotFoundResponse,
+  ApiUnauthorizedResponse,
+} from "src/common/decorators/swagger/api-error-responses.decorator";
+import { ProfileResponseDto } from "./dto/profile-response.dto";
 
 @Controller("users")
 @ApiTags("users")
@@ -25,11 +40,62 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get(":userId")
+  @ApiOperation({
+    summary: "Get user by ID",
+    description:
+      "Retrieves detailed user information including profile, posts, and groups. This endpoint is public and does not require authentication.",
+  })
+  @ApiParam({
+    name: "userId",
+    format: "uuid",
+    description: "User unique identifier (UUID)",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "User found successfully",
+    type: UserDetailResponseDto,
+  })
+  @ApiNotFoundResponse("User")
+  @ApiInvalidUUIDResponse()
+  @ApiDatabaseExceptionResponses("/users/123e4567-e89b-12d3-a456-426614174000")
   public async findOne(@Param("userId", ParseUUIDPipe) userId: string) {
     return this.userService.findOne(userId);
   }
 
   @Post()
+  @ApiOperation({
+    summary: "Create a new user",
+    description:
+      "Creates a new user account with a hashed password. Email must be unique. This endpoint is public for user registration.",
+  })
+  @ApiResponse({
+    status: 201,
+    description: "User created successfully",
+    type: UserResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: "Validation error",
+    schema: {
+      example: {
+        statusCode: 400,
+        timestamp: "2025-12-14T10:30:00.000Z",
+        path: "/users",
+        message: {
+          message: [
+            "name must be between 2 and 32 characters",
+            "name must be a string",
+            "invalid email format",
+            "Password must be between 8 and 50 characters",
+            "password must be a string",
+          ],
+          error: "Bad Request",
+        },
+      },
+    },
+  })
+  @ApiConflictResponse("Email already in use")
+  @ApiDatabaseExceptionResponses("/users")
   public async create(@Body() user: CreateUserDto): Promise<UserResponseDto> {
     return this.userService.create(user);
   }
@@ -37,6 +103,25 @@ export class UserController {
   @Delete(":userId")
   @ApiBearerAuth("JWT-auth")
   @UseGuards(AuthGuard)
+  @ApiOperation({
+    summary: "Delete a user",
+    description:
+      "Permanently deletes a user account and all associated data (posts, comments, profile). Requires authentication. This action cannot be undone.",
+  })
+  @ApiParam({
+    name: "userId",
+    format: "uuid",
+    description: "User unique identifier (UUID)",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "User deleted successfully",
+    type: UserResponseDto,
+  })
+  @ApiInvalidUUIDResponse()
+  @ApiNotFoundResponse("User")
+  @ApiUnauthorizedResponse()
+  @ApiDatabaseExceptionResponses("/users/123e4567-e89b-12d3-a456-426614174000")
   public async delete(
     @Param("userId", ParseUUIDPipe) userId: string,
   ): Promise<UserResponseDto> {
@@ -46,6 +131,64 @@ export class UserController {
   @Patch(":userId")
   @ApiBearerAuth("JWT-auth")
   @UseGuards(AuthGuard)
+  @ApiOperation({
+    summary: "Update user information",
+    description:
+      "Updates the user's name and/or email. At least one field must be provided. If updating the email, it must be unique. Requires authentication.",
+  })
+  @ApiParam({
+    name: "userId",
+    format: "uuid",
+    description: "User unique identifier (UUID)",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "User updated successfully",
+    type: UserResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: "Bad Request",
+    content: {
+      "application/json": {
+        examples: {
+          invalidUuid: {
+            summary: "Invalid UUID",
+            value: {
+              statusCode: 400,
+              timestamp: "2025-12-14T10:30:00.000Z",
+              path: "/users/invalid-uuid",
+              message: {
+                message: "Validation failed (uuid is expected)",
+                error: "Bad Request",
+              },
+            },
+          },
+          formValidation: {
+            summary: "Form Validation Error",
+            value: {
+              statusCode: 400,
+              timestamp: "2025-12-14T10:30:00.000Z",
+              path: "/users/123e4567-e89b-12d3-a456-426614174000",
+              message: {
+                message: [
+                  "name must be between 2 and 32 characters",
+                  "name must be a string",
+                  "invalid email format",
+                  "At least one property must be provided for update: name, email",
+                ],
+                error: "Bad Request",
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiNotFoundResponse("User")
+  @ApiConflictResponse("Email already in use")
+  @ApiUnauthorizedResponse()
+  @ApiDatabaseExceptionResponses("/users/123e4567-e89b-12d3-a456-426614174000")
   public async update(
     @Param("userId", ParseUUIDPipe) userId: string,
     @Body() updateUserDto: UpdateUserDto,
@@ -56,6 +199,81 @@ export class UserController {
   @Post(":userId/profile")
   @ApiBearerAuth("JWT-auth")
   @UseGuards(AuthGuard)
+  @ApiOperation({
+    summary: "Create user profile",
+    description:
+      "Creates a new profile for the user with metadata including bio, avatar, social links, preferences, and more. A user can only have one profile. Requires authentication.",
+  })
+  @ApiParam({
+    name: "userId",
+    format: "uuid",
+    description: "User unique identifier (UUID)",
+  })
+  @ApiResponse({
+    status: 201,
+    description: "Profile created successfully",
+    type: ProfileResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: "Bad Request",
+    content: {
+      "application/json": {
+        examples: {
+          invalidUuid: {
+            summary: "Invalid UUID",
+            value: {
+              statusCode: 400,
+              timestamp: "2025-12-14T10:30:00.000Z",
+              path: "/users/invalid-uuid/profile",
+              message: {
+                message: "Validation failed (uuid is expected)",
+                error: "Bad Request",
+              },
+            },
+          },
+          formValidation: {
+            summary: "Form Validation Error",
+            value: {
+              statusCode: 400,
+              timestamp: "2025-12-14T10:30:00.000Z",
+              path: "/users/123e4567-e89b-12d3-a456-426614174000/profile",
+              message: {
+                message: [
+                  "metadata must be an object",
+                  "metadata.bio must be longer than or equal to 1 characters",
+                  "metadata.bio must be a string",
+                  "metadata.avatar must be a valid URL",
+                  "metadata.phone number must be in international format with 7-15 digits (e.g. +5577996483728)",
+                  "metadata.phone must be a string",
+                  "metadata.location must be longer than or equal to 1 characters",
+                  "metadata.location must be a string",
+                  "metadata.website must be a valid URL",
+                  "metadata.preferences must be an object",
+                ],
+                error: "Bad Request",
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiNotFoundResponse(
+    "User",
+    "/users/123e4567-e89b-12d3-a456-426614174000/profile",
+  )
+  @ApiConflictResponse(
+    "This user already has a profile",
+    "/users/123e4567-e89b-12d3-a456-426614174000/profile",
+  )
+  @ApiInvalidUUIDResponse("/users/invalid-uuid/profile")
+  @ApiUnauthorizedResponse(
+    "/users/123e4567-e89b-12d3-a456-426614174000/profile",
+  )
+  @ApiDatabaseExceptionResponses(
+    "/users/123e4567-e89b-12d3-a456-426614174000/profile",
+  )
   public async createProfileInfo(
     @Param("userId", ParseUUIDPipe) userId: string,
     @Body() profileInfo: CreateProfileDto,
@@ -66,6 +284,99 @@ export class UserController {
   @Patch(":userId/profile")
   @ApiBearerAuth("JWT-auth")
   @UseGuards(AuthGuard)
+  @ApiOperation({
+    summary: "Update user profile",
+    description:
+      "Updates user profile metadata. Performs deep merge of nested objects (preferences, social links). Only provided fields will be updated. Requires authentication.",
+  })
+  @ApiParam({
+    name: "userId",
+    format: "uuid",
+    description: "User unique identifier (UUID)",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Profile updated successfully",
+    type: ProfileResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: "Bad Request",
+    content: {
+      "application/json": {
+        examples: {
+          invalidUuid: {
+            summary: "Invalid UUID",
+            value: {
+              statusCode: 400,
+              timestamp: "2025-12-14T10:30:00.000Z",
+              path: "/users/invalid-uuid/profile",
+              message: {
+                message: "Validation failed (uuid is expected)",
+                error: "Bad Request",
+              },
+            },
+          },
+          formValidation: {
+            summary: "Form Validation Error",
+            value: {
+              statusCode: 400,
+              timestamp: "2025-12-14T10:30:00.000Z",
+              path: "/users/123e4567-e89b-12d3-a456-426614174000/profile",
+              message: {
+                message: [
+                  "metadata must be an object",
+                  "At least one property must be provided for update: metadata",
+                ],
+                error: "Bad Request",
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Not Found",
+    content: {
+      "application/json": {
+        examples: {
+          userNotFound: {
+            summary: "User Not Found",
+            value: {
+              statusCode: 404,
+              timestamp: "2025-12-15T12:38:55.888Z",
+              path: "/users/123e4567-e89b-12d3-a456-426614174000/profile",
+              message: {
+                message:
+                  "User with ID 123e4567-e89b-12d3-a456-426614174000 not found",
+                error: "Not Found",
+              },
+            },
+          },
+          profileNotFound: {
+            summary: "Profile Not Found",
+            value: {
+              statusCode: 404,
+              timestamp: "2025-12-15T12:40:35.979Z",
+              path: "/users/123e4567-e89b-12d3-a456-426614174000/profile",
+              message: {
+                message: "This user does not have a profile yet",
+                error: "Not Found",
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiUnauthorizedResponse(
+    "/users/123e4567-e89b-12d3-a456-426614174000/profile",
+  )
+  @ApiDatabaseExceptionResponses(
+    "/users/123e4567-e89b-12d3-a456-426614174000/profile",
+  )
   public async updateProfileInfo(
     @Param("userId", ParseUUIDPipe) userId: string,
     @Body() updateProfileDto: UpdateProfileDto,
