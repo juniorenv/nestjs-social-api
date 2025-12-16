@@ -1,3 +1,4 @@
+import { applyDecorators } from "@nestjs/common";
 import { ApiResponse } from "@nestjs/swagger";
 
 export function ApiNotFoundResponse(resource: string, customPath?: string) {
@@ -143,4 +144,43 @@ export function ApiUnauthorizedResponse(customPath?: string) {
       },
     },
   });
+}
+
+export function ApiDatabaseExceptionResponses(customPath?: string) {
+  return applyDecorators(
+    ApiResponse({
+      status: 500,
+      description: "Internal Server Error - Database query or operation error",
+      schema: {
+        type: "object",
+        properties: {
+          statusCode: { type: "number", example: 500 },
+          timestamp: {
+            type: "string",
+            format: "date-time",
+            example: "2025-12-15T14:49:04.911Z",
+          },
+          path: { type: "string", example: customPath },
+          message: { type: "string", example: "Database error occurred" },
+        },
+      },
+    }),
+    ApiResponse({
+      status: 503,
+      description: "Service Unavailable - Database connection error",
+      schema: {
+        type: "object",
+        properties: {
+          statusCode: { type: "number", example: 503 },
+          timestamp: {
+            type: "string",
+            format: "date-time",
+            example: "2025-12-15T14:49:04.911Z",
+          },
+          path: { type: "string", example: customPath },
+          message: { type: "string", example: "Database connection failed" },
+        },
+      },
+    }),
+  );
 }
