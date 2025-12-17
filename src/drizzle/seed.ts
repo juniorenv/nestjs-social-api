@@ -133,9 +133,6 @@ async function main() {
       .insert(schema.groups)
       .values([
         {
-          name: "TS",
-        },
-        {
           name: "GO",
         },
         {
