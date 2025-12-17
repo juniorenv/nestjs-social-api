@@ -33,7 +33,7 @@ export class GroupService {
     }
   }
 
-  public async findOne(groupId: string): Promise<GroupEntity> {
+  public async findOne(groupId: string) {
     const foundGroup = await this.db.query.groups.findFirst({
       where: eq(groups.id, groupId),
       with: {
