@@ -26,11 +26,11 @@ import {
 import { AuthGuard } from "src/auth/auth.guard";
 import { UserDetailResponseDto } from "./dto/user-detail-response.dto";
 import {
-  ApiConflictResponse,
+  ApiConflictErrorResponse,
   ApiDatabaseExceptionResponses,
   ApiInvalidUUIDResponse,
-  ApiNotFoundResponse,
-  ApiUnauthorizedResponse,
+  ApiNotFoundErrorResponse,
+  ApiUnauthorizedErrorResponse,
 } from "src/common/decorators/swagger/api-error-responses.decorator";
 import { ProfileResponseDto } from "./dto/profile-response.dto";
 import {
@@ -59,7 +59,7 @@ export class UserController {
     description: "User found successfully",
     type: UserDetailResponseDto,
   })
-  @ApiNotFoundResponse(
+  @ApiNotFoundErrorResponse(
     "User",
     generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID),
   )
@@ -103,7 +103,7 @@ export class UserController {
       },
     },
   })
-  @ApiConflictResponse("Email already in use", "/users")
+  @ApiConflictErrorResponse("Email already in use", "/users")
   @ApiDatabaseExceptionResponses("/users")
   public async create(@Body() user: CreateUserDto): Promise<UserResponseDto> {
     return this.userService.create(user);
@@ -127,12 +127,12 @@ export class UserController {
     description: "User deleted successfully",
     type: UserResponseDto,
   })
-  @ApiNotFoundResponse(
+  @ApiNotFoundErrorResponse(
     "User",
     generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID),
   )
   @ApiInvalidUUIDResponse("/users/invalid-uuid")
-  @ApiUnauthorizedResponse(
+  @ApiUnauthorizedErrorResponse(
     generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID),
   )
   @ApiDatabaseExceptionResponses(
@@ -201,15 +201,15 @@ export class UserController {
       },
     },
   })
-  @ApiNotFoundResponse(
+  @ApiNotFoundErrorResponse(
     "User",
     generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID),
   )
-  @ApiConflictResponse(
+  @ApiConflictErrorResponse(
     "Email already in use",
     generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID),
   )
-  @ApiUnauthorizedResponse(
+  @ApiUnauthorizedErrorResponse(
     generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID),
   )
   @ApiDatabaseExceptionResponses(
@@ -289,16 +289,16 @@ export class UserController {
       },
     },
   })
-  @ApiNotFoundResponse(
+  @ApiNotFoundErrorResponse(
     "User",
     generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID, "profile"),
   )
-  @ApiConflictResponse(
+  @ApiConflictErrorResponse(
     "This user already has a profile",
     generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID, "profile"),
   )
   @ApiInvalidUUIDResponse("/users/invalid-uuid/profile")
-  @ApiUnauthorizedResponse(
+  @ApiUnauthorizedErrorResponse(
     generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID, "profile"),
   )
   @ApiDatabaseExceptionResponses(
@@ -412,7 +412,7 @@ export class UserController {
       },
     },
   })
-  @ApiUnauthorizedResponse(
+  @ApiUnauthorizedErrorResponse(
     generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID, "profile"),
   )
   @ApiDatabaseExceptionResponses(

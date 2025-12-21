@@ -25,9 +25,9 @@ import { GroupDetailResponseDto } from "./dto/group-detail-response.dto";
 import {
   ApiDatabaseExceptionResponses,
   ApiInvalidUUIDResponse,
-  ApiNotFoundResponse,
-  ApiConflictResponse,
-  ApiUnauthorizedResponse,
+  ApiNotFoundErrorResponse,
+  ApiConflictErrorResponse,
+  ApiUnauthorizedErrorResponse,
 } from "src/common/decorators/swagger/api-error-responses.decorator";
 import { AuthGuard } from "src/auth/auth.guard";
 import { GroupResponseDto } from "./dto/group-response.dto";
@@ -58,7 +58,7 @@ export class GroupController {
     description: "Group found successfully",
     type: GroupDetailResponseDto,
   })
-  @ApiNotFoundResponse(
+  @ApiNotFoundErrorResponse(
     "Group",
     generatePathExample("/groups", SWAGGER_EXAMPLES.GROUP_ID),
   )
@@ -102,11 +102,11 @@ export class GroupController {
       },
     },
   })
-  @ApiConflictResponse(
+  @ApiConflictErrorResponse(
     `Group ${SWAGGER_EXAMPLES.GROUP_NAME_TYPESCRIPT} already exists`,
     "/groups",
   )
-  @ApiUnauthorizedResponse("/groups")
+  @ApiUnauthorizedErrorResponse("/groups")
   @ApiDatabaseExceptionResponses("/groups")
   public async create(@Body() group: CreateGroupDto): Promise<GroupEntity> {
     return this.groupService.create(group);
@@ -130,12 +130,12 @@ export class GroupController {
     description: "Group deleted successfully",
     type: GroupResponseDto,
   })
-  @ApiNotFoundResponse(
+  @ApiNotFoundErrorResponse(
     "Group",
     generatePathExample("/groups", SWAGGER_EXAMPLES.GROUP_ID),
   )
   @ApiInvalidUUIDResponse("/groups/invalid-uuid")
-  @ApiUnauthorizedResponse(
+  @ApiUnauthorizedErrorResponse(
     generatePathExample("/groups", SWAGGER_EXAMPLES.GROUP_ID),
   )
   @ApiDatabaseExceptionResponses(
@@ -204,15 +204,15 @@ export class GroupController {
       },
     },
   })
-  @ApiNotFoundResponse(
+  @ApiNotFoundErrorResponse(
     "Group",
     generatePathExample("/groups", SWAGGER_EXAMPLES.GROUP_ID),
   )
-  @ApiConflictResponse(
+  @ApiConflictErrorResponse(
     `Group ${SWAGGER_EXAMPLES.GROUP_NAME_RUST} already exists`,
     generatePathExample("/groups", SWAGGER_EXAMPLES.GROUP_ID),
   )
-  @ApiUnauthorizedResponse(
+  @ApiUnauthorizedErrorResponse(
     generatePathExample("/groups", SWAGGER_EXAMPLES.GROUP_ID),
   )
   @ApiDatabaseExceptionResponses(
@@ -323,11 +323,11 @@ export class GroupController {
       },
     },
   })
-  @ApiConflictResponse(
+  @ApiConflictErrorResponse(
     `User ${SWAGGER_EXAMPLES.USER_ID} is already a member of this group`,
     generatePathExample("/groups", SWAGGER_EXAMPLES.GROUP_ID, "members"),
   )
-  @ApiUnauthorizedResponse(
+  @ApiUnauthorizedErrorResponse(
     generatePathExample("/groups", SWAGGER_EXAMPLES.GROUP_ID, "members"),
   )
   @ApiDatabaseExceptionResponses(
@@ -452,7 +452,7 @@ export class GroupController {
       },
     },
   })
-  @ApiUnauthorizedResponse(
+  @ApiUnauthorizedErrorResponse(
     generatePathExample(
       "/groups",
       SWAGGER_EXAMPLES.GROUP_ID,

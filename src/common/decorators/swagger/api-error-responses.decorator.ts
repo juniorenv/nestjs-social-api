@@ -1,7 +1,10 @@
 import { applyDecorators } from "@nestjs/common";
 import { ApiResponse } from "@nestjs/swagger";
 
-export function ApiNotFoundResponse(resource: string, customPath?: string) {
+export function ApiNotFoundErrorResponse(
+  resource: string,
+  customPath?: string,
+) {
   const path = customPath || "/users/123e4567-e89b-12d3-a456-426614174000";
 
   return ApiResponse({
@@ -41,7 +44,7 @@ export function ApiInvalidUUIDResponse(customPath?: string) {
   });
 }
 
-export function ApiConflictResponse(message: string, customPath?: string) {
+export function ApiConflictErrorResponse(message: string, customPath?: string) {
   const path = customPath || "/users";
 
   return ApiResponse({
@@ -61,7 +64,7 @@ export function ApiConflictResponse(message: string, customPath?: string) {
   });
 }
 
-export function ApiUnauthorizedResponse(customPath?: string) {
+export function ApiUnauthorizedErrorResponse(customPath?: string) {
   const path = customPath || "/users/123e4567-e89b-12d3-a456-426614174000";
 
   return ApiResponse({
