@@ -33,6 +33,10 @@ import {
   ApiUnauthorizedResponse,
 } from "src/common/decorators/swagger/api-error-responses.decorator";
 import { ProfileResponseDto } from "./dto/profile-response.dto";
+import {
+  SWAGGER_EXAMPLES,
+  generatePathExample,
+} from "src/common/constants/swagger-examples.constants";
 
 @Controller("users")
 @ApiTags("users")
@@ -55,9 +59,14 @@ export class UserController {
     description: "User found successfully",
     type: UserDetailResponseDto,
   })
-  @ApiNotFoundResponse("User")
-  @ApiInvalidUUIDResponse()
-  @ApiDatabaseExceptionResponses("/users/123e4567-e89b-12d3-a456-426614174000")
+  @ApiNotFoundResponse(
+    "User",
+    generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID),
+  )
+  @ApiInvalidUUIDResponse("/users/invalid-uuid")
+  @ApiDatabaseExceptionResponses(
+    generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID),
+  )
   public async findOne(@Param("userId", ParseUUIDPipe) userId: string) {
     return this.userService.findOne(userId);
   }
@@ -79,7 +88,7 @@ export class UserController {
     schema: {
       example: {
         statusCode: 400,
-        timestamp: "2025-12-14T10:30:00.000Z",
+        timestamp: SWAGGER_EXAMPLES.TIMESTAMP,
         path: "/users",
         message: {
           message: [
@@ -94,7 +103,7 @@ export class UserController {
       },
     },
   })
-  @ApiConflictResponse("Email already in use")
+  @ApiConflictResponse("Email already in use", "/users")
   @ApiDatabaseExceptionResponses("/users")
   public async create(@Body() user: CreateUserDto): Promise<UserResponseDto> {
     return this.userService.create(user);
@@ -118,10 +127,17 @@ export class UserController {
     description: "User deleted successfully",
     type: UserResponseDto,
   })
-  @ApiInvalidUUIDResponse()
-  @ApiNotFoundResponse("User")
-  @ApiUnauthorizedResponse()
-  @ApiDatabaseExceptionResponses("/users/123e4567-e89b-12d3-a456-426614174000")
+  @ApiNotFoundResponse(
+    "User",
+    generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID),
+  )
+  @ApiInvalidUUIDResponse("/users/invalid-uuid")
+  @ApiUnauthorizedResponse(
+    generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID),
+  )
+  @ApiDatabaseExceptionResponses(
+    generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID),
+  )
   public async delete(
     @Param("userId", ParseUUIDPipe) userId: string,
   ): Promise<UserResponseDto> {
@@ -156,7 +172,7 @@ export class UserController {
             summary: "Invalid UUID",
             value: {
               statusCode: 400,
-              timestamp: "2025-12-14T10:30:00.000Z",
+              timestamp: SWAGGER_EXAMPLES.TIMESTAMP,
               path: "/users/invalid-uuid",
               message: {
                 message: "Validation failed (uuid is expected)",
@@ -168,8 +184,8 @@ export class UserController {
             summary: "Form Validation Error",
             value: {
               statusCode: 400,
-              timestamp: "2025-12-14T10:30:00.000Z",
-              path: "/users/123e4567-e89b-12d3-a456-426614174000",
+              timestamp: SWAGGER_EXAMPLES.TIMESTAMP,
+              path: generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID),
               message: {
                 message: [
                   "name must be between 2 and 32 characters",
@@ -185,10 +201,20 @@ export class UserController {
       },
     },
   })
-  @ApiNotFoundResponse("User")
-  @ApiConflictResponse("Email already in use")
-  @ApiUnauthorizedResponse()
-  @ApiDatabaseExceptionResponses("/users/123e4567-e89b-12d3-a456-426614174000")
+  @ApiNotFoundResponse(
+    "User",
+    generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID),
+  )
+  @ApiConflictResponse(
+    "Email already in use",
+    generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID),
+  )
+  @ApiUnauthorizedResponse(
+    generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID),
+  )
+  @ApiDatabaseExceptionResponses(
+    generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID),
+  )
   public async update(
     @Param("userId", ParseUUIDPipe) userId: string,
     @Body() updateUserDto: UpdateUserDto,
@@ -224,7 +250,7 @@ export class UserController {
             summary: "Invalid UUID",
             value: {
               statusCode: 400,
-              timestamp: "2025-12-14T10:30:00.000Z",
+              timestamp: SWAGGER_EXAMPLES.TIMESTAMP,
               path: "/users/invalid-uuid/profile",
               message: {
                 message: "Validation failed (uuid is expected)",
@@ -236,8 +262,12 @@ export class UserController {
             summary: "Form Validation Error",
             value: {
               statusCode: 400,
-              timestamp: "2025-12-14T10:30:00.000Z",
-              path: "/users/123e4567-e89b-12d3-a456-426614174000/profile",
+              timestamp: SWAGGER_EXAMPLES.TIMESTAMP,
+              path: generatePathExample(
+                "/users",
+                SWAGGER_EXAMPLES.USER_ID,
+                "profile",
+              ),
               message: {
                 message: [
                   "metadata must be an object",
@@ -261,18 +291,18 @@ export class UserController {
   })
   @ApiNotFoundResponse(
     "User",
-    "/users/123e4567-e89b-12d3-a456-426614174000/profile",
+    generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID, "profile"),
   )
   @ApiConflictResponse(
     "This user already has a profile",
-    "/users/123e4567-e89b-12d3-a456-426614174000/profile",
+    generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID, "profile"),
   )
   @ApiInvalidUUIDResponse("/users/invalid-uuid/profile")
   @ApiUnauthorizedResponse(
-    "/users/123e4567-e89b-12d3-a456-426614174000/profile",
+    generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID, "profile"),
   )
   @ApiDatabaseExceptionResponses(
-    "/users/123e4567-e89b-12d3-a456-426614174000/profile",
+    generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID, "profile"),
   )
   public async createProfileInfo(
     @Param("userId", ParseUUIDPipe) userId: string,
@@ -309,7 +339,7 @@ export class UserController {
             summary: "Invalid UUID",
             value: {
               statusCode: 400,
-              timestamp: "2025-12-14T10:30:00.000Z",
+              timestamp: SWAGGER_EXAMPLES.TIMESTAMP,
               path: "/users/invalid-uuid/profile",
               message: {
                 message: "Validation failed (uuid is expected)",
@@ -321,8 +351,12 @@ export class UserController {
             summary: "Form Validation Error",
             value: {
               statusCode: 400,
-              timestamp: "2025-12-14T10:30:00.000Z",
-              path: "/users/123e4567-e89b-12d3-a456-426614174000/profile",
+              timestamp: SWAGGER_EXAMPLES.TIMESTAMP,
+              path: generatePathExample(
+                "/users",
+                SWAGGER_EXAMPLES.USER_ID,
+                "profile",
+              ),
               message: {
                 message: [
                   "metadata must be an object",
@@ -346,11 +380,14 @@ export class UserController {
             summary: "User Not Found",
             value: {
               statusCode: 404,
-              timestamp: "2025-12-15T12:38:55.888Z",
-              path: "/users/123e4567-e89b-12d3-a456-426614174000/profile",
+              timestamp: SWAGGER_EXAMPLES.TIMESTAMP,
+              path: generatePathExample(
+                "/users",
+                SWAGGER_EXAMPLES.USER_ID,
+                "profile",
+              ),
               message: {
-                message:
-                  "User with ID 123e4567-e89b-12d3-a456-426614174000 not found",
+                message: `User with ID ${SWAGGER_EXAMPLES.USER_ID} not found`,
                 error: "Not Found",
               },
             },
@@ -359,8 +396,12 @@ export class UserController {
             summary: "Profile Not Found",
             value: {
               statusCode: 404,
-              timestamp: "2025-12-15T12:40:35.979Z",
-              path: "/users/123e4567-e89b-12d3-a456-426614174000/profile",
+              timestamp: SWAGGER_EXAMPLES.TIMESTAMP,
+              path: generatePathExample(
+                "/users",
+                SWAGGER_EXAMPLES.USER_ID,
+                "profile",
+              ),
               message: {
                 message: "This user does not have a profile yet",
                 error: "Not Found",
@@ -372,10 +413,10 @@ export class UserController {
     },
   })
   @ApiUnauthorizedResponse(
-    "/users/123e4567-e89b-12d3-a456-426614174000/profile",
+    generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID, "profile"),
   )
   @ApiDatabaseExceptionResponses(
-    "/users/123e4567-e89b-12d3-a456-426614174000/profile",
+    generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID, "profile"),
   )
   public async updateProfileInfo(
     @Param("userId", ParseUUIDPipe) userId: string,
