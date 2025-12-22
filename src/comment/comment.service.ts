@@ -37,7 +37,7 @@ export class CommentService {
       },
       with: {
         author: {
-          columns: { id: true, name: true, email: true, password: false },
+          columns: { id: true, name: true, email: false, password: false },
         },
         post: {
           columns: { authorId: false },
