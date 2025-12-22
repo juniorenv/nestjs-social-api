@@ -1,4 +1,4 @@
-import { PartialType, PickType } from "@nestjs/mapped-types";
+import { PartialType, PickType } from "@nestjs/swagger";
 import { CreateUserDto } from "./create-user.dto";
 import { AtLeastOneField } from "src/common/decorators/at-least-one-property.decorator";
 import { ApiPropertyOptional } from "@nestjs/swagger";
