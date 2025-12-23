@@ -44,7 +44,7 @@ export class GroupService {
               columns: {
                 id: true,
                 name: true,
-                email: true,
+                email: false,
                 password: false,
               },
             },

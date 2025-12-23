@@ -12,12 +12,6 @@ class UserSummaryDto {
     example: "John Doe",
   })
   name: string;
-
-  @ApiProperty({
-    description: "User's email address",
-    example: "john.doe@example.com",
-  })
-  email: string;
 }
 
 class GroupMemberDto {

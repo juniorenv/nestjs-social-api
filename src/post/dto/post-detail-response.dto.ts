@@ -12,12 +12,6 @@ class AuthorSummaryDto {
     example: "John Doe",
   })
   name: string;
-
-  @ApiProperty({
-    description: "Author's email address",
-    example: "john.doe@example.com",
-  })
-  email: string;
 }
 
 class CommentAuthorDto {

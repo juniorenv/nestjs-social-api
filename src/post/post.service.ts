@@ -26,7 +26,7 @@ export class PostService {
           columns: {
             id: true,
             name: true,
-            email: true,
+            email: false,
             password: false,
           },
         },
