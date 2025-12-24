@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Inject,
   Injectable,
@@ -169,7 +170,23 @@ export class UserService {
       throw new NotFoundException("This user does not have a profile yet");
     }
 
+    if (updateProfileDto.metadata === null) {
+      throw new BadRequestException("metadata cannot be null");
+    }
+
+    if (updateProfileDto.metadata?.preferences === null) {
+      throw new BadRequestException("preferences cannot be null");
+    }
+
+    if (updateProfileDto.metadata?.socialLinks === null) {
+      throw new BadRequestException("socialLinks cannot be null");
+    }
+
     const customMerger = (objValue: unknown, srcValue: unknown): unknown => {
+      if (srcValue === null) {
+        return objValue;
+      }
+
       if (Array.isArray(srcValue)) {
         return srcValue;
       }

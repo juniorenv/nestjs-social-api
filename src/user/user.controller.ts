@@ -360,6 +360,9 @@ export class UserController {
               message: {
                 message: [
                   "metadata must be an object",
+                  "metadata cannot be null",
+                  "preferences cannot be null",
+                  "socialLinks cannot be null",
                   "At least one property must be provided for update: metadata",
                 ],
                 error: "Bad Request",
