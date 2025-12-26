@@ -1,14 +1,43 @@
 services:
   db:
     image: postgres:17-alpine
+    container_name: nestjs-postgres
     ports:
-      - 5432:5432
+      - "${POSTGRES_PORT:-5432}:5432"
     environment:
-      POSTGRES_USER: pguser
-      POSTGRES_DB: nestjsdrizzle
-      POSTGRES_PASSWORD: 123
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - api-nestjs-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nestjs-api
+    ports:
+      - "${API_PORT:-3000}:3000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-3600}
+      NODE_ENV: development
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - api-nestjs-network
+
+volumes:
+  postgres_data:
 
 networks:
   api-nestjs-network:
