@@ -129,20 +129,17 @@ export class GroupService {
       throw new NotFoundException(`Group with ID ${groupId} not found`);
     }
 
-    const existingMembership = await this.db.query.usersToGroups.findFirst({
-      where: and(
-        eq(usersToGroups.groupId, groupId),
-        eq(usersToGroups.userId, userId),
-      ),
-    });
+    const result = await this.db
+      .insert(usersToGroups)
+      .values({ groupId, userId })
+      .onConflictDoNothing()
+      .returning();
 
-    if (existingMembership) {
+    if (result.length === 0) {
       throw new ConflictException(
         `User ${userId} is already a member of this group`,
       );
     }
-
-    await this.db.insert(usersToGroups).values({ groupId, userId }).returning();
 
     return { message: `Member ${userId} has been successfully added` };
   }
