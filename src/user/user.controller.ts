@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Put,
   UseGuards,
 } from "@nestjs/common";
 import { UserService } from "./user.service";
@@ -37,6 +38,7 @@ import {
   SWAGGER_EXAMPLES,
   generatePathExample,
 } from "src/common/constants/swagger-examples.constants";
+import { ChangePasswordDto } from "./dto/change-password.dto";
 
 @Controller("users")
 @ApiTags("users")
@@ -220,6 +222,130 @@ export class UserController {
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UserResponseDto> {
     return this.userService.update(userId, updateUserDto);
+  }
+
+  @Put(":userId/password")
+  @ApiBearerAuth("JWT-auth")
+  @UseGuards(AuthGuard)
+  @ApiOperation({
+    summary: "Change user password",
+    description:
+      "Updates the user's password. Requires current password verification. The new password must be different from the current one and meet the minimum security requirements (8-50 characters). Requires authentication.",
+  })
+  @ApiParam({
+    name: "userId",
+    format: "uuid",
+    description: "User unique identifier (UUID)",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Password changed successfully",
+    schema: {
+      example: {
+        message: "Password changed successfully",
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: "Bad Request",
+    content: {
+      "application/json": {
+        examples: {
+          invalidUuid: {
+            summary: "Invalid UUID",
+            value: {
+              statusCode: 400,
+              timestamp: SWAGGER_EXAMPLES.TIMESTAMP,
+              path: "/users/invalid-uuid/password",
+              message: {
+                message: "Validation failed (uuid is expected)",
+                error: "Bad Request",
+              },
+            },
+          },
+          formValidation: {
+            summary: "Form Validation Error",
+            value: {
+              statusCode: 400,
+              timestamp: SWAGGER_EXAMPLES.TIMESTAMP,
+              path: generatePathExample(
+                "/users",
+                SWAGGER_EXAMPLES.USER_ID,
+                "password",
+              ),
+              message: {
+                message: [
+                  "currentPassword must be longer than or equal to 8 characters",
+                  "currentPassword must be shorter than or equal to 50 characters",
+                  "currentPassword must be a string",
+                  "newPassword must be longer than or equal to 8 characters",
+                  "newPassword must be shorter than or equal to 50 characters",
+                  "newPassword must be a string",
+                ],
+                error: "Bad Request",
+              },
+            },
+          },
+          samePassword: {
+            summary: "Same Password Error",
+            value: {
+              statusCode: 400,
+              timestamp: SWAGGER_EXAMPLES.TIMESTAMP,
+              path: generatePathExample(
+                "/users",
+                SWAGGER_EXAMPLES.USER_ID,
+                "password",
+              ),
+              message: {
+                message: "New password must be different from current password",
+                error: "Bad Request",
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiUnauthorizedErrorResponse(
+    generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID, "password"),
+    {
+      wrongPassword: {
+        summary: "Wrong Current Password",
+        description: "The provided current password is incorrect",
+        value: {
+          statusCode: 401,
+          timestamp: SWAGGER_EXAMPLES.TIMESTAMP,
+          path: generatePathExample(
+            "/users",
+            SWAGGER_EXAMPLES.USER_ID,
+            "password",
+          ),
+          message: {
+            message: "Current password is incorrect",
+            error: "Unauthorized",
+          },
+        },
+      },
+    },
+  )
+  @ApiNotFoundErrorResponse(
+    "User",
+    generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID, "password"),
+  )
+  @ApiInvalidUUIDResponse("/users/invalid-uuid/password")
+  @ApiDatabaseExceptionResponses(
+    generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID, "password"),
+  )
+  public async changePassword(
+    @Param("userId", ParseUUIDPipe) userId: string,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
+    return this.userService.changePassword(
+      userId,
+      changePasswordDto.currentPassword,
+      changePasswordDto.newPassword,
+    );
   }
 
   @Post(":userId/profile")

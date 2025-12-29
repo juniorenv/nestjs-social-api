@@ -4,12 +4,13 @@ import {
   Inject,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from "@nestjs/common";
 import { DRIZZLE } from "src/drizzle/drizzle.module";
 import type { DrizzleDB } from "src/drizzle/types/drizzle";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { users } from "src/drizzle/schema/users.schema";
-import { hash } from "bcrypt";
+import { compare, hash } from "bcrypt";
 import { CreateProfileDto } from "./dto/create-profile.dto";
 import { profileInfo } from "src/drizzle/schema/profileInfo.schema";
 import { eq } from "drizzle-orm";
@@ -136,6 +137,42 @@ export class UserService {
       .returning();
 
     return plainToInstance(UserResponseDto, updatedUser);
+  }
+
+  public async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+  ) {
+    const foundUser = await this.db.query.users.findFirst({
+      where: eq(users.id, userId),
+    });
+
+    if (!foundUser) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    const isPasswordValid = await compare(currentPassword, foundUser.password);
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException("Current password is incorrect");
+    }
+
+    const isSamePassword = await compare(newPassword, foundUser.password);
+
+    if (isSamePassword) {
+      throw new BadRequestException(
+        "New password must be different from current password",
+      );
+    }
+
+    const hashedPassword = await hash(newPassword, 10);
+
+    await this.db
+      .update(users)
+      .set({ password: hashedPassword, updatedAt: new Date() });
+
+    return { message: "Password changed successfully" };
   }
 
   public async createProfileInfo(
