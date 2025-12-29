@@ -64,8 +64,70 @@ export function ApiConflictErrorResponse(message: string, customPath?: string) {
   });
 }
 
-export function ApiUnauthorizedErrorResponse(customPath?: string) {
+export function ApiUnauthorizedErrorResponse(
+  customPath?: string,
+  additionalExamples?: Record<string, any>,
+) {
   const path = customPath || "/users/123e4567-e89b-12d3-a456-426614174000";
+
+  const baseExamples = {
+    missingToken: {
+      summary: "Missing access token",
+      description: "No token provided in request",
+      value: {
+        statusCode: 401,
+        timestamp: "2025-12-14T20:00:02.260Z",
+        path,
+        message: {
+          message: "Access token is required",
+          error: "Unauthorized",
+        },
+      },
+    },
+    expiredToken: {
+      summary: "Expired token",
+      description: "The JWT token has expired",
+      value: {
+        statusCode: 401,
+        timestamp: "2025-12-14T20:00:02.260Z",
+        path,
+        message: {
+          message: "Token has expired",
+          error: "Unauthorized",
+        },
+      },
+    },
+    invalidToken: {
+      summary: "Invalid token format",
+      description: "Token signature or structure is invalid",
+      value: {
+        statusCode: 401,
+        timestamp: "2025-12-14T20:00:02.260Z",
+        path,
+        message: {
+          message: "Invalid access token",
+          error: "Unauthorized",
+        },
+      },
+    },
+    generalAuthFailure: {
+      summary: "General authorization failure",
+      description: "Generic auth error",
+      value: {
+        statusCode: 401,
+        timestamp: "2025-12-14T20:00:02.260Z",
+        path,
+        message: {
+          message: "Authorization failed",
+          error: "Unauthorized",
+        },
+      },
+    },
+  };
+
+  const allExamples = additionalExamples
+    ? { ...baseExamples, ...additionalExamples }
+    : baseExamples;
 
   return ApiResponse({
     status: 401,
@@ -90,60 +152,7 @@ export function ApiUnauthorizedErrorResponse(customPath?: string) {
             },
           },
         },
-        examples: {
-          missingToken: {
-            summary: "Missing access token",
-            description: "No token provided in request",
-            value: {
-              statusCode: 401,
-              timestamp: "2025-12-14T20:00:02.260Z",
-              path,
-              message: {
-                message: "Access token is required",
-                error: "Unauthorized",
-              },
-            },
-          },
-          expiredToken: {
-            summary: "Expired token",
-            description: "The JWT token has expired",
-            value: {
-              statusCode: 401,
-              timestamp: "2025-12-14T20:00:02.260Z",
-              path,
-              message: {
-                message: "Token has expired",
-                error: "Unauthorized",
-              },
-            },
-          },
-          invalidToken: {
-            summary: "Invalid token format",
-            description: "Token signature or structure is invalid",
-            value: {
-              statusCode: 401,
-              timestamp: "2025-12-14T20:00:02.260Z",
-              path,
-              message: {
-                message: "Invalid access token",
-                error: "Unauthorized",
-              },
-            },
-          },
-          generalAuthFailure: {
-            summary: "General authorization failure",
-            description: "Generic auth error",
-            value: {
-              statusCode: 401,
-              timestamp: "2025-12-14T20:00:02.260Z",
-              path,
-              message: {
-                message: "Authorization failed",
-                error: "Unauthorized",
-              },
-            },
-          },
-        },
+        examples: allExamples,
       },
     },
   });
