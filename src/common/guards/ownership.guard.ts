@@ -7,6 +7,11 @@ import {
 } from "@nestjs/common";
 import { Request } from "express";
 
+/**
+ * Guard to check if authenticated user owns the resource
+ * Works with routes that have :userId parameter
+ * Example: PATCH /users/:userId
+ */
 @Injectable()
 export class OwnershipGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {

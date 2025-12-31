@@ -9,6 +9,11 @@ import {
 import { Reflector } from "@nestjs/core";
 import { Request } from "express";
 
+/**
+ * Guard to check if a field in request body matches authenticated user
+ * Requires @OwnerField decorator to specify which field to check
+ * Example: POST /comments with @OwnerField('authorId')
+ */
 @Injectable()
 export class BodyOwnershipGuard implements CanActivate {
   constructor(private reflector: Reflector) {}

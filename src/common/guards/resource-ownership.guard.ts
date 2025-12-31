@@ -14,6 +14,11 @@ import { posts } from "src/drizzle/schema/posts.schema";
 import { comments } from "src/drizzle/schema/comments.schema";
 import { eq } from "drizzle-orm";
 
+/**
+ * Guard to check if authenticated user owns a specific resource
+ * Requires @ResourceType decorator to specify resource type
+ * Example: PATCH /posts/:postId with @ResourceType('post')
+ */
 @Injectable()
 export class ResourceOwnershipGuard implements CanActivate {
   constructor(
