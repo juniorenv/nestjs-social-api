@@ -22,13 +22,13 @@ export class OwnershipGuard implements CanActivate {
       throw new UnauthorizedException("Authentication required");
     }
 
-    const userId = request.params.userId;
+    const resourceOwnerId = request.params.userId || request.params.authorId;
 
-    if (!userId) {
+    if (!resourceOwnerId) {
       return true;
     }
 
-    if (user.sub !== userId) {
+    if (user.sub !== resourceOwnerId) {
       throw new ForbiddenException(
         "You do not have permission to access this resource",
       );
