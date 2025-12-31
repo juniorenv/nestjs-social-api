@@ -170,7 +170,8 @@ export class UserService {
 
     await this.db
       .update(users)
-      .set({ password: hashedPassword, updatedAt: new Date() });
+      .set({ password: hashedPassword, updatedAt: new Date() })
+      .where(eq(users.id, userId));
 
     return { message: "Password changed successfully" };
   }

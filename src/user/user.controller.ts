@@ -39,6 +39,7 @@ import {
   generatePathExample,
 } from "src/common/constants/swagger-examples.constants";
 import { ChangePasswordDto } from "./dto/change-password.dto";
+import { OwnershipGuard } from "src/common/guards/ownership.guard";
 
 @Controller("users")
 @ApiTags("users")
@@ -113,7 +114,7 @@ export class UserController {
 
   @Delete(":userId")
   @ApiBearerAuth("JWT-auth")
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, OwnershipGuard)
   @ApiOperation({
     summary: "Delete a user",
     description:
@@ -148,7 +149,7 @@ export class UserController {
 
   @Patch(":userId")
   @ApiBearerAuth("JWT-auth")
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, OwnershipGuard)
   @ApiOperation({
     summary: "Update user information",
     description:
@@ -226,7 +227,7 @@ export class UserController {
 
   @Put(":userId/password")
   @ApiBearerAuth("JWT-auth")
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, OwnershipGuard)
   @ApiOperation({
     summary: "Change user password",
     description:
@@ -350,7 +351,7 @@ export class UserController {
 
   @Post(":userId/profile")
   @ApiBearerAuth("JWT-auth")
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, OwnershipGuard)
   @ApiOperation({
     summary: "Create user profile",
     description:
@@ -439,7 +440,7 @@ export class UserController {
 
   @Patch(":userId/profile")
   @ApiBearerAuth("JWT-auth")
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, OwnershipGuard)
   @ApiOperation({
     summary: "Update user profile",
     description:
