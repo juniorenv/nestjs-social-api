@@ -33,6 +33,9 @@ import {
 } from "src/common/constants/swagger-examples.constants";
 import { AuthGuard } from "src/auth/auth.guard";
 import { PostResponseDto } from "./dto/post-response.dto";
+import { OwnershipGuard } from "src/common/guards/ownership.guard";
+import { ResourceOwnershipGuard } from "src/common/guards/resource-ownership.guard";
+import { ResourceType } from "src/common/decorators/resource-type.decorator";
 
 @Controller("posts")
 @ApiTags("posts")
@@ -69,7 +72,7 @@ export class PostController {
 
   @Post(":authorId")
   @ApiBearerAuth("JWT-auth")
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, OwnershipGuard)
   @ApiOperation({
     summary: "Create a new post",
     description:
@@ -145,7 +148,8 @@ export class PostController {
 
   @Delete(":postId")
   @ApiBearerAuth("JWT-auth")
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, ResourceOwnershipGuard)
+  @ResourceType("post")
   @ApiOperation({
     summary: "Delete a post",
     description:
@@ -180,7 +184,8 @@ export class PostController {
 
   @Patch(":postId")
   @ApiBearerAuth("JWT-auth")
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, ResourceOwnershipGuard)
+  @ResourceType("post")
   @ApiOperation({
     summary: "Update post information",
     description:
