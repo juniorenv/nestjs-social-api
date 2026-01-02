@@ -33,6 +33,10 @@ import {
 } from "src/common/constants/swagger-examples.constants";
 import { AuthGuard } from "src/auth/auth.guard";
 import { CommentResponseDto } from "./dto/comment-response.dto";
+import { BodyOwnershipGuard } from "src/common/guards/body-ownership.guard";
+import { OwnerField } from "src/common/decorators/owner-field.decorator";
+import { ResourceOwnershipGuard } from "src/common/guards/resource-ownership.guard";
+import { ResourceType } from "src/common/decorators/resource-type.decorator";
 
 @Controller("comments")
 @ApiTags("comments")
@@ -69,7 +73,8 @@ export class CommentController {
 
   @Post()
   @ApiBearerAuth("JWT-auth")
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, BodyOwnershipGuard)
+  @OwnerField("authorId")
   @ApiOperation({
     summary: "Create a new comment",
     description:
@@ -152,7 +157,8 @@ export class CommentController {
 
   @Delete(":commentId")
   @ApiBearerAuth("JWT-auth")
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, ResourceOwnershipGuard)
+  @ResourceType("comment")
   @ApiOperation({
     summary: "Delete a comment",
     description:
@@ -187,7 +193,8 @@ export class CommentController {
 
   @Patch(":commentId")
   @ApiBearerAuth("JWT-auth")
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, ResourceOwnershipGuard)
+  @ResourceType("comment")
   @ApiOperation({
     summary: "Update comment text",
     description:
