@@ -22,4 +22,6 @@
 
 ## Database Schema
 
+📝 **Note:** Database schema is currently being refined and is subject to change.
+
 ![alt text](docs/relations.png)
