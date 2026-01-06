@@ -196,3 +196,42 @@ export function ApiDatabaseExceptionResponses(customPath?: string) {
     }),
   );
 }
+
+export function ApiForbiddenErrorResponse(customPath?: string) {
+  const path = customPath || "/groups/123e4567-e89b-12d3-a456-426614174000";
+
+  return ApiResponse({
+    status: 403,
+    description: "Forbidden - Only group owner can update",
+    content: {
+      "application/json": {
+        examples: {
+          notOwner: {
+            summary: "Not Group Owner",
+            value: {
+              statusCode: 403,
+              timestamp: "2025-12-14T10:30:00.000Z",
+              path,
+              message: {
+                message: "Only the group owner can perform this action",
+                error: "Forbidden",
+              },
+            },
+          },
+          notMember: {
+            summary: "Not Group Member",
+            value: {
+              statusCode: 403,
+              timestamp: "2025-12-14T10:30:00.000Z",
+              path,
+              message: {
+                message: "You are not a member of this group",
+                error: "Forbidden",
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+}
