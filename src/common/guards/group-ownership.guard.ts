@@ -1,12 +1,5 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Inject,
-  Injectable,
-} from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Request } from "express";
-import { DRIZZLE } from "src/drizzle/drizzle.module";
-import type { DrizzleDB } from "src/drizzle/types/drizzle";
 import { GroupService } from "src/group/group.service";
 
 /**
@@ -14,10 +7,7 @@ import { GroupService } from "src/group/group.service";
  */
 @Injectable()
 export class GroupOwnershipGuard implements CanActivate {
-  constructor(
-    @Inject(DRIZZLE) private readonly db: DrizzleDB,
-    private readonly groupService: GroupService,
-  ) {}
+  constructor(private readonly groupService: GroupService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
