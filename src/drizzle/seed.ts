@@ -133,14 +133,16 @@ async function main() {
       .insert(schema.groups)
       .values([
         {
-          name: "GO",
+          name: "TypeScript",
+          description: "TS community",
+          createdById: userIds[0],
         },
         {
           name: "Rust",
+          description: "Rust community",
+          createdById: userIds[1],
         },
-        {
-          name: "Java",
-        },
+        { name: "GO", description: "Go community", createdById: userIds[2] },
       ])
       .onConflictDoNothing()
       .returning();
