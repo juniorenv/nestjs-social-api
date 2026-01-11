@@ -6,7 +6,7 @@ export function ApiNotFoundErrorResponse(resource: string, customPath: string) {
 
   return ApiResponse({
     status: 404,
-    description: `${resource} not found`,
+    description: `Not Found - ${resource} not found`,
     schema: {
       example: {
         statusCode: 404,
@@ -26,7 +26,7 @@ export function ApiInvalidUUIDResponse(customPath: string) {
 
   return ApiResponse({
     status: 400,
-    description: "Invalid UUID format",
+    description: "Bad Request - Invalid UUID format",
     schema: {
       example: {
         statusCode: 400,
