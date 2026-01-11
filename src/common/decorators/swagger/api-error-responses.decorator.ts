@@ -1,11 +1,8 @@
 import { applyDecorators } from "@nestjs/common";
 import { ApiResponse } from "@nestjs/swagger";
 
-export function ApiNotFoundErrorResponse(
-  resource: string,
-  customPath?: string,
-) {
-  const path = customPath || "/users/123e4567-e89b-12d3-a456-426614174000";
+export function ApiNotFoundErrorResponse(resource: string, customPath: string) {
+  const path = customPath;
 
   return ApiResponse({
     status: 404,
@@ -24,8 +21,8 @@ export function ApiNotFoundErrorResponse(
   });
 }
 
-export function ApiInvalidUUIDResponse(customPath?: string) {
-  const path = customPath || "/users/invalid-uuid";
+export function ApiInvalidUUIDResponse(customPath: string) {
+  const path = customPath;
 
   return ApiResponse({
     status: 400,
@@ -44,8 +41,8 @@ export function ApiInvalidUUIDResponse(customPath?: string) {
   });
 }
 
-export function ApiConflictErrorResponse(message: string, customPath?: string) {
-  const path = customPath || "/users";
+export function ApiConflictErrorResponse(message: string, customPath: string) {
+  const path = customPath;
 
   return ApiResponse({
     status: 409,
@@ -65,10 +62,10 @@ export function ApiConflictErrorResponse(message: string, customPath?: string) {
 }
 
 export function ApiUnauthorizedErrorResponse(
-  customPath?: string,
+  customPath: string,
   additionalExamples?: Record<string, any>,
 ) {
-  const path = customPath || "/users/123e4567-e89b-12d3-a456-426614174000";
+  const path = customPath;
 
   const baseExamples = {
     missingToken: {
@@ -158,7 +155,7 @@ export function ApiUnauthorizedErrorResponse(
   });
 }
 
-export function ApiDatabaseExceptionResponses(customPath?: string) {
+export function ApiDatabaseExceptionResponses(customPath: string) {
   return applyDecorators(
     ApiResponse({
       status: 500,
