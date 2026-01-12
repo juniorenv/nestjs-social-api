@@ -23,6 +23,7 @@ import {
 import { PostDetailResponseDto } from "./dto/post-detail-response.dto";
 import {
   ApiDatabaseExceptionResponses,
+  ApiForbiddenErrorResponse,
   ApiInvalidUUIDResponse,
   ApiNotFoundErrorResponse,
   ApiUnauthorizedErrorResponse,
@@ -129,6 +130,9 @@ export class PostController {
       },
     },
   })
+  @ApiForbiddenErrorResponse(
+    generatePathExample("/posts", SWAGGER_EXAMPLES.POST_ID),
+  )
   @ApiNotFoundErrorResponse(
     "User",
     generatePathExample("/posts", SWAGGER_EXAMPLES.USER_ID),

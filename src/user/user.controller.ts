@@ -29,6 +29,7 @@ import { UserDetailResponseDto } from "./dto/user-detail-response.dto";
 import {
   ApiConflictErrorResponse,
   ApiDatabaseExceptionResponses,
+  ApiForbiddenErrorResponse,
   ApiInvalidUUIDResponse,
   ApiNotFoundErrorResponse,
   ApiUnauthorizedErrorResponse,
@@ -130,6 +131,9 @@ export class UserController {
     description: "User deleted successfully",
     type: UserResponseDto,
   })
+  @ApiForbiddenErrorResponse(
+    generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID),
+  )
   @ApiNotFoundErrorResponse(
     "User",
     generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID),
@@ -204,6 +208,9 @@ export class UserController {
       },
     },
   })
+  @ApiForbiddenErrorResponse(
+    generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID),
+  )
   @ApiNotFoundErrorResponse(
     "User",
     generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID),
@@ -330,6 +337,9 @@ export class UserController {
       },
     },
   )
+  @ApiForbiddenErrorResponse(
+    generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID, "password"),
+  )
   @ApiNotFoundErrorResponse(
     "User",
     generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID, "password"),
@@ -416,6 +426,9 @@ export class UserController {
       },
     },
   })
+  @ApiForbiddenErrorResponse(
+    generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID, "profile"),
+  )
   @ApiNotFoundErrorResponse(
     "User",
     generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID, "profile"),
@@ -542,6 +555,9 @@ export class UserController {
       },
     },
   })
+  @ApiForbiddenErrorResponse(
+    generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID, "profile"),
+  )
   @ApiUnauthorizedErrorResponse(
     generatePathExample("/users", SWAGGER_EXAMPLES.USER_ID, "profile"),
   )
