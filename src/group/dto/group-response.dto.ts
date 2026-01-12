@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class GroupResponseDto {
   @ApiProperty({
@@ -10,9 +10,22 @@ export class GroupResponseDto {
 
   @ApiProperty({
     description: "Group name",
-    example: "TypeScript",
+    example: "TypeScript Developers",
   })
   name: string;
+
+  @ApiPropertyOptional({
+    description: "Group description",
+    example: "A community for TypeScript enthusiasts",
+  })
+  description?: string;
+
+  @ApiProperty({
+    description: "Group creator/owner ID",
+    example: "123e4567-e89b-12d3-a456-426614174000",
+    format: "uuid",
+  })
+  createdById: string;
 
   @ApiProperty({
     description: "Group creation timestamp",

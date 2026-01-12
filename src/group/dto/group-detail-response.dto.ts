@@ -1,25 +1,25 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
-class UserSummaryDto {
-  @ApiProperty({
-    description: "User unique identifier",
-    example: "123e4567-e89b-12d3-a456-426614174000",
-  })
+class GroupCreatorDto {
+  @ApiProperty({ example: "123e4567-e89b-12d3-a456-426614174000" })
   id: string;
 
-  @ApiProperty({
-    description: "User's full name",
-    example: "John Doe",
-  })
+  @ApiProperty({ example: "John Doe" })
   name: string;
 }
 
 class GroupMemberDto {
-  @ApiProperty({
-    description: "User information",
-    type: UserSummaryDto,
-  })
-  user: UserSummaryDto;
+  @ApiProperty({ example: "987e4567-e89b-12d3-a456-426614174999" })
+  id: string;
+
+  @ApiProperty({ example: "Jane Smith" })
+  name: string;
+
+  @ApiProperty({ example: "member", enum: ["member", "owner"] })
+  role: "member" | "owner";
+
+  @ApiProperty({ example: "2025-12-14T10:30:00.000Z" })
+  joinedAt: Date;
 }
 
 export class GroupDetailResponseDto {
@@ -31,9 +31,15 @@ export class GroupDetailResponseDto {
 
   @ApiProperty({
     description: "Group name",
-    example: "TypeScript",
+    example: "TypeScript Developers",
   })
   name: string;
+
+  @ApiPropertyOptional({
+    description: "Group description",
+    example: "A community for TypeScript enthusiasts",
+  })
+  description?: string;
 
   @ApiProperty({
     description: "Group creation timestamp",
@@ -48,8 +54,14 @@ export class GroupDetailResponseDto {
   updatedAt: Date;
 
   @ApiProperty({
-    description: "List of users who are members of this group",
+    description: "Group creator information",
+    type: GroupCreatorDto,
+  })
+  creator: GroupCreatorDto;
+
+  @ApiProperty({
+    description: "Group members with their roles",
     type: [GroupMemberDto],
   })
-  usersToGroups: GroupMemberDto[];
+  members: GroupMemberDto[];
 }
