@@ -28,7 +28,7 @@ import {
   ApiNotFoundErrorResponse,
   ApiConflictErrorResponse,
   ApiUnauthorizedErrorResponse,
-  ApiForbiddenErrorResponse,
+  ApiGroupForbiddenErrorResponse,
 } from "src/common/decorators/swagger/api-error-responses.decorator";
 import { AuthGuard } from "src/auth/auth.guard";
 import { GroupResponseDto } from "./dto/group-response.dto";
@@ -146,7 +146,7 @@ export class GroupController {
   @ApiUnauthorizedErrorResponse(
     generatePathExample("/groups", SWAGGER_EXAMPLES.GROUP_ID),
   )
-  @ApiForbiddenErrorResponse()
+  @ApiGroupForbiddenErrorResponse()
   @ApiDatabaseExceptionResponses(
     generatePathExample("/groups", SWAGGER_EXAMPLES.GROUP_ID),
   )
@@ -226,7 +226,7 @@ export class GroupController {
   @ApiUnauthorizedErrorResponse(
     generatePathExample("/groups", SWAGGER_EXAMPLES.GROUP_ID),
   )
-  @ApiForbiddenErrorResponse()
+  @ApiGroupForbiddenErrorResponse()
   @ApiDatabaseExceptionResponses(
     generatePathExample("/groups", SWAGGER_EXAMPLES.GROUP_ID),
   )

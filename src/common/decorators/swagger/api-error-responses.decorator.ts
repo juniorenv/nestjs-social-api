@@ -194,7 +194,7 @@ export function ApiDatabaseExceptionResponses(customPath: string) {
   );
 }
 
-export function ApiForbiddenErrorResponse(customPath?: string) {
+export function ApiGroupForbiddenErrorResponse(customPath?: string) {
   const path = customPath || "/groups/123e4567-e89b-12d3-a456-426614174000";
 
   return ApiResponse({
