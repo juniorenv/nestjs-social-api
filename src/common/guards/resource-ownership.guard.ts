@@ -5,6 +5,7 @@ import {
   ForbiddenException,
   UnauthorizedException,
   Inject,
+  NotFoundException,
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { Request } from "express";
@@ -65,7 +66,7 @@ export class ResourceOwnershipGuard implements CanActivate {
     });
 
     if (!post) {
-      throw new ForbiddenException("Post not found");
+      throw new NotFoundException(`Post with ID ${postId} not found`);
     }
 
     if (post.authorId !== userId) {
