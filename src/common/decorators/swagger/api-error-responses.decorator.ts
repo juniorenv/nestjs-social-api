@@ -232,23 +232,3 @@ export function ApiGroupForbiddenErrorResponse(customPath?: string) {
     },
   });
 }
-
-export function ApiForbiddenErrorResponse(customPath: string) {
-  const path = customPath;
-
-  return ApiResponse({
-    status: 403,
-    description: "Forbidden - No permission to access this resource",
-    schema: {
-      example: {
-        statusCode: 403,
-        timestamp: "2025-01-12T13:01:19.818Z",
-        path,
-        message: {
-          message: "You do not have permission to access this resource",
-          error: "Forbidden",
-        },
-      },
-    },
-  });
-}
