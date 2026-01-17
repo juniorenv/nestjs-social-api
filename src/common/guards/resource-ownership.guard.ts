@@ -86,7 +86,7 @@ export class ResourceOwnershipGuard implements CanActivate {
     });
 
     if (!comment) {
-      throw new ForbiddenException("Comment not found");
+      throw new NotFoundException(`Comment with ID ${commentId} not found`);
     }
 
     if (comment.authorId !== userId) {
