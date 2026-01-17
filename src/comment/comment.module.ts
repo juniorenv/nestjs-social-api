@@ -8,5 +8,6 @@ import { UserModule } from "src/user/user.module";
   providers: [CommentService],
   controllers: [CommentController],
   imports: [DrizzleModule, UserModule],
+  exports: [CommentService],
 })
 export class CommentModule {}
