@@ -56,14 +56,16 @@ export class CommentService {
   }
 
   public async create(
+    authorId: string,
+    postId: string,
     createCommentDto: CreateCommentDto,
   ): Promise<CommentEntity> {
-    await this.userService.checkUserExists(createCommentDto.authorId);
-    await this.checkPostExists(createCommentDto.postId);
+    await this.userService.checkUserExists(authorId);
+    await this.checkPostExists(postId);
 
     const [createdComment] = await this.db
       .insert(comments)
-      .values(createCommentDto)
+      .values({ authorId, postId, text: createCommentDto.text })
       .returning();
 
     return createdComment;
