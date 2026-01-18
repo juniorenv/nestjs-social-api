@@ -34,11 +34,17 @@ import { PostResponseDto } from "./dto/post-response.dto";
 import { ResourceOwnershipGuard } from "src/common/guards/resource-ownership.guard";
 import { ResourceType } from "src/common/decorators/resource-type.decorator";
 import type { Request } from "express";
+import { CommentResponseDto } from "src/comment/dto/comment-response.dto";
+import { CreateCommentDto } from "src/comment/dto/create-comment.dto";
+import { CommentService } from "src/comment/comment.service";
 
 @Controller("posts")
 @ApiTags("posts")
 export class PostController {
-  constructor(private readonly postService: PostService) {}
+  constructor(
+    private readonly postService: PostService,
+    private readonly commentService: CommentService,
+  ) {}
 
   @Post()
   @ApiBearerAuth("JWT-auth")
@@ -243,5 +249,111 @@ export class PostController {
   @ApiDatabaseExceptionResponses("/posts/" + SWAGGER_EXAMPLES.POST_ID)
   public async findOne(@Param("postId", ParseUUIDPipe) postId: string) {
     return this.postService.findOne(postId);
+  }
+
+  @Post(":postId/comments")
+  @ApiBearerAuth("JWT-auth")
+  @UseGuards(AuthGuard)
+  @ApiOperation({
+    summary: "Create a comment on a post",
+    description:
+      "Creates a new comment on the specified post by the authenticated user. Comment text must be between 1-280 characters. Requires authentication.",
+    tags: ["posts", "comments"],
+  })
+  @ApiParam({
+    name: "postId",
+    format: "uuid",
+    description: "Post unique identifier (UUID)",
+  })
+  @ApiResponse({
+    status: 201,
+    description: "Comment created successfully",
+    type: CommentResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: "Bad Request - Validation error",
+    content: {
+      "application/json": {
+        examples: {
+          invalidPostId: {
+            summary: "Invalid Post UUID",
+            value: {
+              statusCode: 400,
+              timestamp: SWAGGER_EXAMPLES.TIMESTAMP,
+              path: "/posts/invalid-uuid/comments",
+              message: {
+                message: "Validation failed (uuid is expected)",
+                error: "Bad Request",
+              },
+            },
+          },
+          formValidation: {
+            summary: "Form Validation Error",
+            value: {
+              statusCode: 400,
+              timestamp: SWAGGER_EXAMPLES.TIMESTAMP,
+              path: "/posts/" + SWAGGER_EXAMPLES.POST_ID + "/comments",
+              message: {
+                message: [
+                  "text must be longer than or equal to 1 characters",
+                  "text must be shorter than or equal to 280 characters",
+                  "text must be a string",
+                ],
+                error: "Bad Request",
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Not Found",
+    content: {
+      "application/json": {
+        examples: {
+          userNotFound: {
+            summary: "Author Not Found",
+            value: {
+              statusCode: 404,
+              timestamp: SWAGGER_EXAMPLES.TIMESTAMP,
+              path: "/posts/" + SWAGGER_EXAMPLES.POST_ID + "/comments",
+              message: {
+                message: `User with ID ${SWAGGER_EXAMPLES.USER_ID} not found`,
+                error: "Not Found",
+              },
+            },
+          },
+          postNotFound: {
+            summary: "Post Not Found",
+            value: {
+              statusCode: 404,
+              timestamp: SWAGGER_EXAMPLES.TIMESTAMP,
+              path: "/posts/" + SWAGGER_EXAMPLES.POST_ID + "/comments",
+              message: {
+                message: `Post with ID ${SWAGGER_EXAMPLES.POST_ID} not found`,
+                error: "Not Found",
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiUnauthorizedErrorResponse(
+    "/posts/" + SWAGGER_EXAMPLES.POST_ID + "/comments",
+  )
+  @ApiDatabaseExceptionResponses(
+    "/posts/" + SWAGGER_EXAMPLES.POST_ID + "/comments",
+  )
+  public async createComment(
+    @Param("postId", ParseUUIDPipe) postId: string,
+    @Body() createCommentDto: CreateCommentDto,
+    @Req() request: Request,
+  ) {
+    const authorId = request.user!.sub;
+    return this.commentService.create(authorId, postId, createCommentDto);
   }
 }
