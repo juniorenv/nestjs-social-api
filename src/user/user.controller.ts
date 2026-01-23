@@ -294,24 +294,19 @@ export class UserController {
     description: "Bad Request - Validation error",
     content: {
       "application/json": {
-        examples: {
-          formValidation: {
-            summary: "Form Validation Error",
-            value: {
-              statusCode: 400,
-              timestamp: SWAGGER_EXAMPLES.TIMESTAMP,
-              path: "/users/me/profile",
-              message: {
-                message: [
-                  "metadata must be an object",
-                  "metadata cannot be null",
-                  "preferences cannot be null",
-                  "socialLinks cannot be null",
-                  "At least one property must be provided for update: metadata",
-                ],
-                error: "Bad Request",
-              },
-            },
+        example: {
+          statusCode: 400,
+          timestamp: SWAGGER_EXAMPLES.TIMESTAMP,
+          path: "/users/me/profile",
+          message: {
+            message: [
+              "metadata must be an object",
+              "metadata cannot be null",
+              "preferences cannot be null",
+              "socialLinks cannot be null",
+              "At least one property must be provided for update: metadata",
+            ],
+            error: "Bad Request",
           },
         },
       },
