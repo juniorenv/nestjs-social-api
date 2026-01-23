@@ -6,6 +6,7 @@ import {
   UnauthorizedException,
   Inject,
   NotFoundException,
+  BadRequestException,
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { Request } from "express";
@@ -14,6 +15,7 @@ import type { DrizzleDB } from "src/drizzle/types/drizzle";
 import { posts } from "src/drizzle/schema/posts.schema";
 import { comments } from "src/drizzle/schema/comments.schema";
 import { eq } from "drizzle-orm";
+import { validate as isUUID } from "uuid";
 
 /**
  * Guard to check if authenticated user owns a specific resource
@@ -60,6 +62,10 @@ export class ResourceOwnershipGuard implements CanActivate {
     postId: string,
     userId: string,
   ): Promise<boolean> {
+    if (!postId || !isUUID(postId)) {
+      throw new BadRequestException("Validation failed (uuid is expected)");
+    }
+
     const post = await this.db.query.posts.findFirst({
       where: eq(posts.id, postId),
       columns: { id: true, authorId: true },
@@ -80,6 +86,10 @@ export class ResourceOwnershipGuard implements CanActivate {
     commentId: string,
     userId: string,
   ): Promise<boolean> {
+    if (!commentId || !isUUID(commentId)) {
+      throw new BadRequestException("Validation failed (uuid is expected)");
+    }
+
     const comment = await this.db.query.comments.findFirst({
       where: eq(comments.id, commentId),
       columns: { id: true, authorId: true },
