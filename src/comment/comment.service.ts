@@ -6,8 +6,10 @@ import type { DrizzleDB } from "src/drizzle/types/drizzle";
 import { CreateCommentDto } from "./dto/create-comment.dto";
 import { UserService } from "src/user/user.service";
 import { posts } from "src/drizzle/schema/posts.schema";
-import { CommentEntity } from "./dto/comment.types";
 import { UpdateCommentDto } from "./dto/update-comment.dto";
+import { CommentDetailResponseDto } from "./dto/comment-detail-response.dto";
+import { plainToInstance } from "class-transformer";
+import { CommentResponseDto } from "./dto/comment-response.dto";
 
 @Injectable()
 export class CommentService {
@@ -28,7 +30,7 @@ export class CommentService {
       throw new NotFoundException(`Post with ID ${postId} not found`);
   }
 
-  public async findOne(commentId: string) {
+  public async findOne(commentId: string): Promise<CommentDetailResponseDto> {
     const foundComment = await this.db.query.comments.findFirst({
       where: eq(comments.id, commentId),
       columns: {
@@ -52,14 +54,14 @@ export class CommentService {
       throw new NotFoundException(`Comment with ID ${commentId} not found`);
     }
 
-    return foundComment;
+    return plainToInstance(CommentDetailResponseDto, foundComment);
   }
 
   public async create(
     authorId: string,
     postId: string,
     createCommentDto: CreateCommentDto,
-  ): Promise<CommentEntity> {
+  ): Promise<CommentResponseDto> {
     await this.userService.checkUserExists(authorId);
     await this.checkPostExists(postId);
 
@@ -68,10 +70,10 @@ export class CommentService {
       .values({ authorId, postId, text: createCommentDto.text })
       .returning();
 
-    return createdComment;
+    return plainToInstance(CommentResponseDto, createdComment);
   }
 
-  public async delete(commentId: string): Promise<CommentEntity> {
+  public async delete(commentId: string): Promise<CommentResponseDto> {
     const [deletedComment] = await this.db
       .delete(comments)
       .where(eq(comments.id, commentId))
@@ -81,13 +83,13 @@ export class CommentService {
       throw new NotFoundException(`Comment with ID ${commentId} not found`);
     }
 
-    return deletedComment;
+    return plainToInstance(CommentResponseDto, deletedComment);
   }
 
   public async update(
     commentId: string,
     updateCommentDto: UpdateCommentDto,
-  ): Promise<CommentEntity> {
+  ): Promise<CommentResponseDto> {
     const [updatedComment] = await this.db
       .update(comments)
       .set({ ...updateCommentDto, updatedAt: new Date() })
@@ -97,6 +99,6 @@ export class CommentService {
     if (!updatedComment) {
       throw new NotFoundException(`Comment with ID ${commentId} not found`);
     }
-    return updatedComment;
+    return plainToInstance(CommentResponseDto, updatedComment);
   }
 }

@@ -10,7 +10,6 @@ import {
 } from "@nestjs/common";
 import { CommentService } from "./comment.service";
 import { UpdateCommentDto } from "./dto/update-comment.dto";
-import { CommentEntity } from "./dto/comment.types";
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -81,7 +80,7 @@ export class CommentController {
   @ApiDatabaseExceptionResponses("/comments/" + SWAGGER_EXAMPLES.COMMENT_ID)
   public async delete(
     @Param("commentId", ParseUUIDPipe) commentId: string,
-  ): Promise<CommentEntity> {
+  ): Promise<CommentResponseDto> {
     return this.commentService.delete(commentId);
   }
 
@@ -169,7 +168,7 @@ export class CommentController {
   public async update(
     @Param("commentId", ParseUUIDPipe) commentId: string,
     @Body() updateCommentDto: UpdateCommentDto,
-  ): Promise<CommentEntity> {
+  ): Promise<CommentResponseDto> {
     return this.commentService.update(commentId, updateCommentDto);
   }
 
@@ -195,7 +194,9 @@ export class CommentController {
   )
   @ApiInvalidUUIDResponse("/comments/invalid-uuid")
   @ApiDatabaseExceptionResponses("/comments/" + SWAGGER_EXAMPLES.COMMENT_ID)
-  public async findOne(@Param("commentId", ParseUUIDPipe) commentId: string) {
+  public async findOne(
+    @Param("commentId", ParseUUIDPipe) commentId: string,
+  ): Promise<CommentDetailResponseDto> {
     return this.commentService.findOne(commentId);
   }
 }

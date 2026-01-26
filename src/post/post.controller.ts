@@ -353,7 +353,7 @@ export class PostController {
     @Param("postId", ParseUUIDPipe) postId: string,
     @Body() createCommentDto: CreateCommentDto,
     @Req() request: Request,
-  ) {
+  ): Promise<CommentResponseDto> {
     const authorId = request.user!.sub;
     return this.commentService.create(authorId, postId, createCommentDto);
   }
