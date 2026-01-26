@@ -11,7 +11,6 @@ import {
   Req,
 } from "@nestjs/common";
 import { PostService } from "./post.service";
-import { PostEntity } from "./dto/post.types";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { UpdatePostDto } from "./dto/update-post.dto";
 import {
@@ -89,7 +88,7 @@ export class PostController {
   public async create(
     @Body() post: CreatePostDto,
     @Req() request: Request,
-  ): Promise<PostEntity> {
+  ): Promise<PostResponseDto> {
     const authorId = request.user!.sub;
     return this.postService.create(authorId, post);
   }
@@ -136,7 +135,7 @@ export class PostController {
   @ApiDatabaseExceptionResponses("/posts/" + SWAGGER_EXAMPLES.POST_ID)
   public async delete(
     @Param("postId", ParseUUIDPipe) postId: string,
-  ): Promise<PostEntity> {
+  ): Promise<PostResponseDto> {
     return this.postService.delete(postId);
   }
 
@@ -224,7 +223,7 @@ export class PostController {
   public async update(
     @Param("postId", ParseUUIDPipe) postId: string,
     @Body() updatePostDto: UpdatePostDto,
-  ): Promise<PostEntity> {
+  ): Promise<PostResponseDto> {
     return this.postService.update(postId, updatePostDto);
   }
 
@@ -247,7 +246,9 @@ export class PostController {
   @ApiNotFoundErrorResponse("Post", "/posts/" + SWAGGER_EXAMPLES.POST_ID)
   @ApiInvalidUUIDResponse("/posts/invalid-uuid")
   @ApiDatabaseExceptionResponses("/posts/" + SWAGGER_EXAMPLES.POST_ID)
-  public async findOne(@Param("postId", ParseUUIDPipe) postId: string) {
+  public async findOne(
+    @Param("postId", ParseUUIDPipe) postId: string,
+  ): Promise<PostDetailResponseDto> {
     return this.postService.findOne(postId);
   }
 

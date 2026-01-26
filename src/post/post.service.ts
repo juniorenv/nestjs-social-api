@@ -3,10 +3,12 @@ import type { DrizzleDB } from "../drizzle/types/drizzle";
 import { DRIZZLE } from "src/drizzle/drizzle.module";
 import { eq } from "drizzle-orm";
 import { posts } from "src/drizzle/schema/posts.schema";
-import { PostEntity } from "./dto/post.types";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { UserService } from "src/user/user.service";
 import { UpdatePostDto } from "./dto/update-post.dto";
+import { plainToInstance } from "class-transformer";
+import { PostDetailResponseDto } from "./dto/post-detail-response.dto";
+import { PostResponseDto } from "./dto/post-response.dto";
 
 @Injectable()
 export class PostService {
@@ -15,7 +17,7 @@ export class PostService {
     private readonly userService: UserService,
   ) {}
 
-  public async findOne(postId: string) {
+  public async findOne(postId: string): Promise<PostDetailResponseDto> {
     const foundPost = await this.db.query.posts.findFirst({
       where: eq(posts.id, postId),
       columns: {
@@ -52,13 +54,13 @@ export class PostService {
       throw new NotFoundException(`Post with ID ${postId} not found`);
     }
 
-    return foundPost;
+    return plainToInstance(PostDetailResponseDto, foundPost);
   }
 
   public async create(
     authorId: string,
     post: CreatePostDto,
-  ): Promise<PostEntity> {
+  ): Promise<PostResponseDto> {
     await this.userService.checkUserExists(authorId);
 
     const [createdPost] = await this.db
@@ -69,10 +71,10 @@ export class PostService {
       })
       .returning();
 
-    return createdPost;
+    return plainToInstance(PostResponseDto, createdPost);
   }
 
-  public async delete(postId: string): Promise<PostEntity> {
+  public async delete(postId: string): Promise<PostResponseDto> {
     const [deletedPost] = await this.db
       .delete(posts)
       .where(eq(posts.id, postId))
@@ -82,13 +84,13 @@ export class PostService {
       throw new NotFoundException(`Post with ID ${postId} not found`);
     }
 
-    return deletedPost;
+    return plainToInstance(PostResponseDto, deletedPost);
   }
 
   public async update(
     postId: string,
     updatePostDto: UpdatePostDto,
-  ): Promise<PostEntity> {
+  ): Promise<PostResponseDto> {
     const [updatedPost] = await this.db
       .update(posts)
       .set({ ...updatePostDto, updatedAt: new Date() })
@@ -99,6 +101,6 @@ export class PostService {
       throw new NotFoundException(`Post with ID ${postId} not found`);
     }
 
-    return updatedPost;
+    return plainToInstance(PostResponseDto, updatedPost);
   }
 }
