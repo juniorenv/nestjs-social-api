@@ -220,6 +220,12 @@ The Swagger UI provides:
 - Try-it-out functionality
 - Authentication support
 
+### Screenshots
+
+![Swagger docs 0](docs/swaggerdocs0.png)
+![Swagger docs 1](docs/swaggerdocs1.png)
+![Swagger docs 2](docs/swaggerdocs2.png)
+
 ## 🔐 Authentication
 
 ### Sign Up
